@@ -10,7 +10,7 @@ import time
 
 from .utils import *
 from .minibatch import MinibatchIterator
-from .model import DGRec
+from .model import VModel
 
 # DISCLAIMER:
 # This file is forked from https://github.com/DeepGraphLearning/RecommenderSystems/tree/master/socialRec
@@ -78,7 +78,7 @@ def train(args, data):
                 max_length=args.max_length,
                 samples_1_2=[args.samples_1, args.samples_2])
     
-    dgrec = DGRec(args, minibatch.sizes, placeholders)
+    vmodel = VModel(args, minibatch.sizes, placeholders)
     
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -111,7 +111,7 @@ def train(args, data):
         while not minibatch.end() and not early_stopping:
             t = time.time()
             feed_dict = minibatch.next_train_minibatch_feed_dict()
-            outs = sess.run([dgrec.opt_op, dgrec.loss, dgrec.sum_recall, dgrec.sum_ndcg, dgrec.point_count], feed_dict=feed_dict)
+            outs = sess.run([vmodel.opt_op, vmodel.loss, vmodel.sum_recall, vmodel.sum_ndcg, vmodel.point_count], feed_dict=feed_dict)
             train_cost = outs[1]
             epoch_train_cost.append(train_cost)
             epoch_train_recall.append(outs[2])
@@ -121,7 +121,7 @@ def train(args, data):
             avg_time = (avg_time * total_steps + time.time() - t) / (total_steps + 1)
 
             if iter_cn % args.val_every == 0:
-                ret = evaluate(sess, dgrec, minibatch)
+                ret = evaluate(sess, vmodel, minibatch)
                 epoch_val_cost.append(ret[0])
                 epoch_val_recall.append(ret[1])
                 epoch_val_ndcg.append(ret[2])
@@ -160,7 +160,7 @@ def train(args, data):
     print('-----------{} seconds per batch iteration-------------'.format((end_time - start_time) / total_steps))
     print('Parameter settings: {}'.format(args.ckpt_dir))
     print('Optimization finished!\tStart testing...')
-    ret = evaluate(sess, dgrec, minibatch, 'test')
+    ret = evaluate(sess, vmodel, minibatch, 'test')
     print('Test results:',
             '\tLoss:{}'.format(ret[0]),
             '\tRecall@10:{}'.format(ret[1]),
@@ -196,7 +196,7 @@ class Args():
 
 def parseArgs():
     args = Args()
-    parser = argparse.ArgumentParser(description='DGRec args')
+    parser = argparse.ArgumentParser(description='VModel args')
     parser.add_argument('--batch', default=200, type=int)
     parser.add_argument('--model', default='attn', type=str)
     parser.add_argument('--act', default='relu', type=str)
@@ -235,7 +235,7 @@ def parseArgs():
     args.decay_rate = new_args.decay_rate
     args.local_only = new_args.local
     args.global_only = new_args.glb
-    args.ckpt_dir = args.ckpt_dir + 'dgrec_batch{}'.format(args.batch_size)
+    args.ckpt_dir = args.ckpt_dir + 'vmodel_batch{}'.format(args.batch_size)
     args.ckpt_dir = args.ckpt_dir + '_model{}'.format(args.aggregator_type)
     args.ckpt_dir = args.ckpt_dir + '_act{}'.format(args.act)
     args.ckpt_dir = args.ckpt_dir + '_maxdegree{}'.format(args.max_degree)

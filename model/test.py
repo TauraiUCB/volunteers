@@ -10,7 +10,7 @@ import time
 
 from .utils import *
 from .minibatch import MinibatchIterator
-from .model import DGRec
+from .model import VModel
 
 # DISCLAIMER:
 # This file is forked from https://github.com/DeepGraphLearning/RecommenderSystems/tree/master/socialRec
@@ -82,7 +82,7 @@ def test(args, data):
                 samples_1_2=[args.samples_1, args.samples_2],
                 training=False)
     
-    dgrec = DGRec(args, minibatch.sizes, placeholders)
+    vmodel = VModel(args, minibatch.sizes, placeholders)
     
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
@@ -95,7 +95,7 @@ def test(args, data):
     else:
         print('Failed to restore model from {}'.format(args.ckpt_dir))
         sys.exit(0)
-    ret = evaluate(sess, dgrec, minibatch, "test")
+    ret = evaluate(sess, vmodel, minibatch, "test")
     print("Test results(batch_size=1):",
           "\tloss=", "{:.5f}".format(ret[0]),
           "\trecall@10=", "{:.5f}".format(ret[1]),
@@ -139,7 +139,7 @@ class Args():
 
 def parseArgs():
     args = Args()
-    parser = argparse.ArgumentParser(description='DGRec args')
+    parser = argparse.ArgumentParser(description='VModel args')
     parser.add_argument('--batch', default=200, type=int)
     parser.add_argument('--model', default='attn', type=str)
     parser.add_argument('--act', default='relu', type=str)
@@ -178,7 +178,7 @@ def parseArgs():
     args.decay_rate = new_args.decay_rate
     args.local_only = new_args.local
     args.global_only = new_args.glb
-    args.ckpt_dir = args.ckpt_dir + 'dgrec_batch{}'.format(args.batch_size)
+    args.ckpt_dir = args.ckpt_dir + 'vmodel_batch{}'.format(args.batch_size)
     args.ckpt_dir = args.ckpt_dir + '_model{}'.format(args.aggregator_type)
     args.ckpt_dir = args.ckpt_dir + '_act{}'.format(args.act)
     args.ckpt_dir = args.ckpt_dir + '_maxdegree{}'.format(args.max_degree)

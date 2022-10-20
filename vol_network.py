@@ -14,7 +14,7 @@ def set_up():
     org_user = org_user.drop(['count'], axis=1)
     _mapping = org_user.Location.unique()
     _mapping_dict = dict(zip(_mapping, range(len(_mapping))))
-    _org_user = org_user.applymap(lambda x: _mapping.get(x) if x in _mapping else x)
+    _org_user = org_user.applymap(lambda x: _mapping_dict.get(x) if x in _mapping_dict else x)
     _org_user = _org_user.rename(columns={'Timestamp': 'dates'})
     _org_user['ts'] = _org_user['dates'].apply(lambda x: pd.Timestamp(x))
     _org_user['Timestamp'] = _org_user.ts.values.astype(np.int64) // 10 ** 9
@@ -24,7 +24,7 @@ def set_up():
     _org_user = _org_user[['UserId', 'ItemId', 'Location', 'Timestamp']]
     return _org_user
 
-def neighbours():
+def network():
     data = set_up()
     network = pd.crosstab(data['UserId'], data['ItemId'])
     row_id = network.index
@@ -36,8 +36,11 @@ def neighbours():
                 .to_list(), columns = ['a','b','c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'])
 
     net['UserId'] = row_id
-    _friends = pd.melt(net, id_vars=['UserId'])
+    net = pd.melt(net, id_vars=['UserId'])
     net['Weight'] = 1
     net = net.rename(columns={'UserId': 'Followee', 'value': 'Follower'})
     net = net[['Follower', 'Followee', 'Weight']]
     net.to_csv('volunteer_network.tsv')
+
+if __name__ == '__main__':
+    network()

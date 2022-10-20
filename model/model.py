@@ -4,17 +4,15 @@ import numpy as np
 from .aggregators import *
 from .layers import Dense
 # DISCLAIMER:
-# This file is forked from https://github.com/DeepGraphLearning/RecommenderSystems/tree/master/socialRec
-# which is also under the MIT license
+# Some sections of this file was forked from https://github.com/DeepGraphLearning/RecommenderSystems/tree/master/socialRec
+# which is also under the MIT license. The
 
-class DGRec(object):
+class VModel(object):
 
     def __init__(self, args, support_sizes, placeholders):
         self.support_sizes = support_sizes
         if args.aggregator_type == "mean":
             self.aggregator_cls = MeanAggregator
-        elif args.aggregator_type == "seq":
-            self.aggregator_cls = SeqAggregator
         elif args.aggregator_type == "maxpool":
             self.aggregator_cls = MaxPoolingAggregator
         elif args.aggregator_type == "meanpool":
