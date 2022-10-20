@@ -1,8 +1,8 @@
 # Environment Settings
- Python 2.7.18
- Tensorflow 1.4.1
- Pandas 1.5.1
- Numpy 1.23.4
+- Python 2.7.18
+- Tensorflow 1.4.1
+- Pandas 1.5.1
+- Numpy 1.23.4
  
  # Usage
  For experimentation, we provide raw data in the 'data' file which should be used as follows: 
@@ -24,4 +24,4 @@
 - To run the code, run ```sh volunteer.sh```
 
 # Data
-The Pioneers Volunteer Data has over 2.5 million events, 80 043 unique vlunteers and 7 391 organizers
+The Pioneers Volunteer Data has over 2.5 million events, 80 043 unique volunteers and 7 391 organizers
