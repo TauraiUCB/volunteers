@@ -7,8 +7,7 @@ from collections import Counter
 
 
 
-NETWORK_FILE = './data/volunteer_net.csv'
-#VOL_ORG_FILE = './data/pioneer.csv'
+NETWORK_FILE = './data/volunteer_network.tsv'
 max_length = 30
 
 
@@ -28,7 +27,7 @@ def set_up():
     org_user = org_user.drop(['count'], axis=1)
     _mapping = org_user.Location.unique()
     _mapping_dict = dict(zip(_mapping, range(len(_mapping))))
-    _org_user = org_user.applymap(lambda x: _mapping.get(x) if x in _mapping else x)
+    _org_user = org_user.applymap(lambda x: _mapping_dict.get(x) if x in _mapping_dict else x)
     _org_user = _org_user.rename(columns={'Timestamp': 'dates'})
     _org_user['ts'] = _org_user['dates'].apply(lambda x: pd.Timestamp(x))
     _org_user['Timestamp'] = _org_user.ts.values.astype(np.int64) // 10 ** 9
@@ -36,7 +35,7 @@ def set_up():
     _org_user = _org_user.drop(['ts'], axis=1)
     _org_user = _org_user.rename(columns={'user_id': 'UserId', 'org_id': 'ItemId'})
     _org_user = _org_user[['UserId', 'ItemId', 'Location', 'Timestamp']]
-    return org_user
+    return _org_user
 
 def process_rating(day): # segment session in every $day days.
     df = set_up()
